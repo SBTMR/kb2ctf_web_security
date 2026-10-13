@@ -1,0 +1,9 @@
+{
+  "name": "kb2ctf-meme-forum",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {"node": ">=24 <25"},
+  "scripts": {"start": "node server.js", "test": "node --test ../tests/app.test.mjs"},
+  "dependencies": {"express": "5.3.0", "ejs": "7.0.1"}
+}

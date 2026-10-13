@@ -1,0 +1,46 @@
+name: kb2ctf-web-lab-path-traversal
+services:
+  path-traversal:
+    read_only: true
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 1.0
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
+    build:
+      context: ../..
+      dockerfile: tasks/path-traversal/Dockerfile
+    ports:
+    - 127.0.0.1:8085:8080
+    networks:
+    - storage_net
+    secrets:
+    - source: storage_flag
+      target: /run/lab/flag.txt
+    volumes:
+    - storage_data:/var/lib/lab/storage
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz',timeout=2).read()
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
+    labels:
+      kb2ctf.lab: kb2ctf-web-lab
+networks:
+  storage_net:
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: 'false'
+secrets:
+  storage_flag:
+    file: ../../.lab/secrets/path-traversal/flag.txt
+volumes:
+  storage_data: {}

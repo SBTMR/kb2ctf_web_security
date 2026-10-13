@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}Pinger Deluxe Edition{% endblock %}{% block service %}Pinger Deluxe Edition{% endblock %}
+{% block body %}<h1>IP Pinger Deluxe Edition</h1><p class="lead">Версия панели с сообщением о завершении операции.</p>
+<section class="card"><form data-api="/api/pinger" data-observe="/api/observation"><label>Адрес<input name="ip" value="127.0.0.1" autocomplete="off"></label><button type="submit">Запустить диагностику</button></form><pre id="result" aria-live="polite">Ожидается диагностика.</pre></section>
+<section class="card"><h2>Наблюдаемое состояние</h2><p>Состояние относится только к последней попытке этого браузера.</p><button type="button" class="secondary" data-observe="/api/observation">Обновить состояние</button><pre id="observation" aria-live="polite">Попытка ещё не создана.</pre></section>{% endblock %}

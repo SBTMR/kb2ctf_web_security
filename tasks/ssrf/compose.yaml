@@ -1,0 +1,106 @@
+name: kb2ctf-web-lab-ssrf
+services:
+  ssrf:
+    read_only: true
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 1.0
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
+    build:
+      context: ../..
+      dockerfile: tasks/ssrf/Dockerfile
+    ports:
+    - 127.0.0.1:8089:8080
+    networks:
+    - ssrf_sites
+    - ssrf_private
+    depends_on:
+      ssrf-internal:
+        condition: service_healthy
+      ssrf-sample:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz',timeout=2).read()
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
+    labels:
+      kb2ctf.lab: kb2ctf-web-lab
+  ssrf-internal:
+    read_only: true
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 1.0
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
+    build:
+      context: ../..
+      dockerfile: tasks/ssrf/Internal.Dockerfile
+    networks:
+    - ssrf_private
+    environment:
+      ROLE: internal
+    secrets:
+    - source: ssrf_flag
+      target: /run/lab/flag.txt
+    healthcheck:
+      test:
+      - CMD
+      - /usr/local/bin/lab-service
+      - healthcheck
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    labels:
+      kb2ctf.lab: kb2ctf-web-lab
+  ssrf-sample:
+    read_only: true
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 1.0
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
+    build:
+      context: ../..
+      dockerfile: tasks/ssrf/Internal.Dockerfile
+    networks:
+    - ssrf_sites
+    environment:
+      ROLE: sample
+    healthcheck:
+      test:
+      - CMD
+      - /usr/local/bin/lab-service
+      - healthcheck
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    labels:
+      kb2ctf.lab: kb2ctf-web-lab
+networks:
+  ssrf_private:
+    internal: true
+  ssrf_sites:
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: 'false'
+secrets:
+  ssrf_flag:
+    file: ../../.lab/secrets/ssrf/flag.txt
