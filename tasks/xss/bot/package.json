@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": {"start": "node main.js", "test": "node --test ../tests/bot.test.mjs"},
-  "dependencies": {"playwright": "1.64.0"}
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "playwright": "1.64.0"
+  }
 }

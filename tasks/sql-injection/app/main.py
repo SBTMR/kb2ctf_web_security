@@ -11,8 +11,7 @@ from pathlib import Path
 from flask import jsonify
 
 ROOT = Path(__file__).resolve().parent
-DEV_ASSETS = ROOT.parents[2] / 'common' / 'ui' if len(ROOT.parents) > 2 else ROOT / 'static'
-app = Flask(__name__, static_folder=str(DEV_ASSETS if DEV_ASSETS.exists() else ROOT / 'static'))
+app = Flask(__name__)
 
 app.config['SESSION_COOKIE_NAME'] = 'kb2ctf_sql'
 app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(25))

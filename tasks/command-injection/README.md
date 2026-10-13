@@ -1,36 +1,24 @@
 # Pinger
 
-Стек: Python / Flask. Сложность: Basic.
-Prerequisites: Executable, arguments, shell command strings.
+IP Pinger: обычная диагностика локального адреса возвращает текст. Сохранён исходный shell command string.
 
-## Обычный сценарий
+## Запуск
 
-IP Pinger: укажите локальный адрес в форме и получите текстовый результат обычной диагностики. Исходный API /api/pinger принимает поле ip и возвращает message.
-
-## Архитектура и учебная цель
-
-ip → shell command string. Исходный subprocess.run запускает одну shell string, без added timeout или output cap.
-Возвращаются исходные stderr либо stdout в message. Новый UI показывает ответ как текст.
-Общий новый UI не меняет основную учебную причину ошибки оригинала.
-Flags provisioned локально; формата KB2CTF{...}, исключены из source и образов.
-
-## Запуск и reset
-
-Из корня repository:
+Скопируйте всю эту папку в любое место и из неё выполните:
 
 ~~~sh
-python tools/lab.py init
-docker compose -f tasks/command-injection/compose.yaml up -d --build --wait
-python tools/lab.py reset command-injection
-docker compose -f tasks/command-injection/compose.yaml down
+docker compose up --build
 ~~~
 
-Либо python tools/lab.py up command-injection. Требуются Python 3.11+ и работающий Docker с Linux containers.
-Задача запускается собственным Compose project, не запускает соседние задания.
-Состояние сбрасывается только у неё; локальный flag сохраняется.
+Откройте http://127.0.0.1:8086. Нужны только Docker с Linux containers и Docker Compose v2.
+Первая сборка загружает зависимости. Все файлы и готовые учебные настройки находятся внутри этой папки;
+Python, Node.js, Go и отдельная установка БД на host не нужны. Порт 8086 должен быть свободен.
 
-## Готовность
+Остановка: Ctrl+C, затем docker compose down. Named volumes сохраняются.
+Для чистого начального состояния этой задачи: docker compose down -v, затем повторный запуск.
+Это удаляет только данные данного Compose project. У задач без named volumes достаточно пересоздать контейнер.
 
-Критерии готовности: normal flow, input errors и healthcheck; отдельный Docker-запуск и scoped reset.
-Текущий статус фактических проверок указан в ../../docs/VERIFICATION.md.
-Причина основной ошибки сопоставима с безопасным вариантом в FIX.md. HINTS.md содержит только концептуальные подсказки.
+flag.txt содержит явно демонстрационный флаг; локальные password/key files содержат готовые учебные значения.
+Стенд предназначен для локального обучения. Публичные ports привязаны к 127.0.0.1.
+Концептуальные подсказки — HINTS.md; причина ошибки и безопасный вариант — FIX.md.
+Attribution и лицензии — NOTICE.md и файлы соответствующих зависимостей.

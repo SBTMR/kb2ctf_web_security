@@ -7,8 +7,7 @@ from flask import Flask, jsonify, render_template, request, session
 from flask import jsonify
 
 ROOT = Path(__file__).resolve().parent
-DEV_ASSETS = ROOT.parents[2] / 'common' / 'ui' if len(ROOT.parents) > 2 else ROOT / 'static'
-app = Flask(__name__, static_folder=str(DEV_ASSETS if DEV_ASSETS.exists() else ROOT / 'static'))
+app = Flask(__name__)
 
 def read_flag():
     return Path(os.environ.get('FLAG_FILE', '/run/lab/flag.txt')).read_text(encoding='utf-8').strip()

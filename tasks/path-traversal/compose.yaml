@@ -1,4 +1,4 @@
-name: kb2ctf-web-lab-path-traversal
+name: kb2ctf-path-traversal
 services:
   path-traversal:
     read_only: true
@@ -12,17 +12,15 @@ services:
     tmpfs:
     - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
     build:
-      context: ../..
-      dockerfile: tasks/path-traversal/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
     - 127.0.0.1:8085:8080
     networks:
     - storage_net
-    secrets:
-    - source: storage_flag
-      target: /run/lab/flag.txt
     volumes:
     - storage_data:/var/lib/lab/storage
+    - ./flag.txt:/run/lab/flag.txt:ro
     healthcheck:
       test:
       - CMD
@@ -33,14 +31,9 @@ services:
       timeout: 3s
       retries: 15
       start_period: 10s
-    labels:
-      kb2ctf.lab: kb2ctf-web-lab
 networks:
   storage_net:
     driver_opts:
       com.docker.network.bridge.enable_ip_masquerade: 'false'
-secrets:
-  storage_flag:
-    file: ../../.lab/secrets/path-traversal/flag.txt
 volumes:
   storage_data: {}

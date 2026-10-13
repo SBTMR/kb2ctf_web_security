@@ -1,4 +1,4 @@
-name: kb2ctf-web-lab-ssrf
+name: kb2ctf-ssrf
 services:
   ssrf:
     read_only: true
@@ -12,8 +12,8 @@ services:
     tmpfs:
     - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
     build:
-      context: ../..
-      dockerfile: tasks/ssrf/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
     - 127.0.0.1:8089:8080
     networks:
@@ -34,8 +34,6 @@ services:
       timeout: 3s
       retries: 15
       start_period: 10s
-    labels:
-      kb2ctf.lab: kb2ctf-web-lab
   ssrf-internal:
     read_only: true
     security_opt:
@@ -48,15 +46,12 @@ services:
     tmpfs:
     - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
     build:
-      context: ../..
-      dockerfile: tasks/ssrf/Internal.Dockerfile
+      context: .
+      dockerfile: Internal.Dockerfile
     networks:
     - ssrf_private
     environment:
       ROLE: internal
-    secrets:
-    - source: ssrf_flag
-      target: /run/lab/flag.txt
     healthcheck:
       test:
       - CMD
@@ -65,8 +60,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 15
-    labels:
-      kb2ctf.lab: kb2ctf-web-lab
+    volumes:
+    - ./flag.txt:/run/lab/flag.txt:ro
   ssrf-sample:
     read_only: true
     security_opt:
@@ -79,8 +74,8 @@ services:
     tmpfs:
     - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
     build:
-      context: ../..
-      dockerfile: tasks/ssrf/Internal.Dockerfile
+      context: .
+      dockerfile: Internal.Dockerfile
     networks:
     - ssrf_sites
     environment:
@@ -93,14 +88,9 @@ services:
       interval: 5s
       timeout: 3s
       retries: 15
-    labels:
-      kb2ctf.lab: kb2ctf-web-lab
 networks:
   ssrf_private:
     internal: true
   ssrf_sites:
     driver_opts:
       com.docker.network.bridge.enable_ip_masquerade: 'false'
-secrets:
-  ssrf_flag:
-    file: ../../.lab/secrets/ssrf/flag.txt

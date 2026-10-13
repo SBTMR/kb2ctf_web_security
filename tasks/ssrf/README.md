@@ -1,36 +1,26 @@
 # Web Sheriff
 
-Стек: Python / Flask / Requests + Go internal service. Сложность: Intermediate.
-Prerequisites: HTTP clients/servers, URLs, private networks.
+URL Sender: Public Backend → Internal Service. Для обычного сценария есть локальный sample-site, поле URL и пользовательские headers.
 
-## Обычный сценарий
+## Запуск
 
-URL Sender: получите страницу controlled sample-site из формы. При необходимости добавьте обычные HTTP headers. Исходный API /api/send принимает url и headers, возвращает текст в message.
-
-## Архитектура и учебная цель
-
-User → Public Flask Backend → private Go Internal Service. Пользователь задаёт destination серверного HTTP client; destination allowlist отсутствует. Internal Service не опубликован наружу, использует исходную Authorization-проверку. sample-site обслуживает normal flow без интернета.
-Gateway использует исходный requests.get: обычные redirects/text decoding, без добавленных URL/header filters и response/time limits.
-Общий новый UI не меняет основную учебную причину ошибки оригинала.
-Flags provisioned локально; формата KB2CTF{...}, исключены из source и образов.
-
-## Запуск и reset
-
-Из корня repository:
+Скопируйте всю эту папку в любое место и из неё выполните:
 
 ~~~sh
-python tools/lab.py init
-docker compose -f tasks/ssrf/compose.yaml up -d --build --wait
-python tools/lab.py reset ssrf
-docker compose -f tasks/ssrf/compose.yaml down
+docker compose up --build
 ~~~
 
-Либо python tools/lab.py up ssrf. Требуются Python 3.11+ и работающий Docker с Linux containers.
-Задача запускается собственным Compose project, не запускает соседние задания.
-Состояние сбрасывается только у неё; локальный flag сохраняется.
+Откройте http://127.0.0.1:8089. Нужны только Docker с Linux containers и Docker Compose v2.
+Первая сборка загружает зависимости. Все файлы и готовые учебные настройки находятся внутри этой папки;
+Python, Node.js, Go и отдельная установка БД на host не нужны. Порт 8089 должен быть свободен.
 
-## Готовность
+Обычный источник: http://ssrf-sample:8080/. Internal Service и sample-site не публикуют ports.
 
-Критерии готовности: normal flow, input errors и healthcheck; отдельный Docker-запуск и scoped reset.
-Текущий статус фактических проверок указан в ../../docs/VERIFICATION.md.
-Причина основной ошибки сопоставима с безопасным вариантом в FIX.md. HINTS.md содержит только концептуальные подсказки.
+Остановка: Ctrl+C, затем docker compose down. Named volumes сохраняются.
+Для чистого начального состояния этой задачи: docker compose down -v, затем повторный запуск.
+Это удаляет только данные данного Compose project. У задач без named volumes достаточно пересоздать контейнер.
+
+flag.txt содержит явно демонстрационный флаг; локальные password/key files содержат готовые учебные значения.
+Стенд предназначен для локального обучения. Публичные ports привязаны к 127.0.0.1.
+Концептуальные подсказки — HINTS.md; причина ошибки и безопасный вариант — FIX.md.
+Attribution и лицензии — NOTICE.md и файлы соответствующих зависимостей.

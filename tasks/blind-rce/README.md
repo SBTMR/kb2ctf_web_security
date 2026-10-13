@@ -1,36 +1,26 @@
 # Pinger Deluxe Edition
 
-Стек: Python / Flask. Сложность: Intermediate.
-Prerequisites: Pinger, отсутствие output и observable state.
+Продолжение Pinger без stdout/stderr. Локальный marker относится к текущей попытке; обычный ping его не создаёт.
 
-## Обычный сценарий
+## Запуск
 
-Тот же IP Pinger и /api/pinger с ip. Ответ сообщает только завершение, stdout/stderr скрыты. Observer показывает состояние текущей попытки; обычный ping marker не создаёт.
-
-## Архитектура и учебная цель
-
-Та же Command Injection, затем output отсутствует → локальное observable state → подтверждение выполнения. Marker в выделенной области, привязан к server-generated attempt; старые markers не учитываются.
-Как у исходного Pinger, используется прямой run без input length filter, process wrapper или timeout. Shell-соединения, listeners и callbacks отсутствуют.
-Общий новый UI не меняет основную учебную причину ошибки оригинала.
-Flags provisioned локально; формата KB2CTF{...}, исключены из source и образов.
-
-## Запуск и reset
-
-Из корня repository:
+Скопируйте всю эту папку в любое место и из неё выполните:
 
 ~~~sh
-python tools/lab.py init
-docker compose -f tasks/blind-rce/compose.yaml up -d --build --wait
-python tools/lab.py reset blind-rce
-docker compose -f tasks/blind-rce/compose.yaml down
+docker compose up --build
 ~~~
 
-Либо python tools/lab.py up blind-rce. Требуются Python 3.11+ и работающий Docker с Linux containers.
-Задача запускается собственным Compose project, не запускает соседние задания.
-Состояние сбрасывается только у неё; локальный flag сохраняется.
+Откройте http://127.0.0.1:8087. Нужны только Docker с Linux containers и Docker Compose v2.
+Первая сборка загружает зависимости. Все файлы и готовые учебные настройки находятся внутри этой папки;
+Python, Node.js, Go и отдельная установка БД на host не нужны. Порт 8087 должен быть свободен.
 
-## Готовность
+Marker — локальное состояние текущей попытки. Shell-соединения, callbacks и listeners не используются.
 
-Критерии готовности: normal flow, input errors и healthcheck; отдельный Docker-запуск и scoped reset.
-Текущий статус фактических проверок указан в ../../docs/VERIFICATION.md.
-Причина основной ошибки сопоставима с безопасным вариантом в FIX.md. HINTS.md содержит только концептуальные подсказки.
+Остановка: Ctrl+C, затем docker compose down. Named volumes сохраняются.
+Для чистого начального состояния этой задачи: docker compose down -v, затем повторный запуск.
+Это удаляет только данные данного Compose project. У задач без named volumes достаточно пересоздать контейнер.
+
+flag.txt содержит явно демонстрационный флаг; локальные password/key files содержат готовые учебные значения.
+Стенд предназначен для локального обучения. Публичные ports привязаны к 127.0.0.1.
+Концептуальные подсказки — HINTS.md; причина ошибки и безопасный вариант — FIX.md.
+Attribution и лицензии — NOTICE.md и файлы соответствующих зависимостей.

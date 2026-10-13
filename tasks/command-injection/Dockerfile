@@ -3,10 +3,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 RUN groupadd --gid 10001 lab && useradd --uid 10001 --gid lab --no-create-home lab
 RUN apt-get update && apt-get install -y --no-install-recommends iputils-ping && setcap -r /usr/bin/ping && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-COPY tasks/command-injection/requirements.txt /app/requirements.txt
+COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-COPY tasks/command-injection/app/ /app/
-COPY common/ui/ /app/static/
+COPY app/ /app/
 USER 10001:10001
 EXPOSE 8080
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "4", "--timeout", "15", "--access-logfile", "/dev/null", "main:app"]

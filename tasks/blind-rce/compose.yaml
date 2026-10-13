@@ -1,4 +1,4 @@
-name: kb2ctf-web-lab-blind-rce
+name: kb2ctf-blind-rce
 services:
   blind-rce:
     read_only: true
@@ -13,17 +13,12 @@ services:
     - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
     - /var/lib/lab/state:rw,noexec,nosuid,size=32m,uid=10001,gid=10001,mode=0700
     build:
-      context: ../..
-      dockerfile: tasks/blind-rce/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
     - 127.0.0.1:8087:8080
     networks:
     - blind_net
-    secrets:
-    - source: blind_flag
-      target: /run/lab/flag.txt
-    - source: blind_key
-      target: /run/lab/session-key.txt
     sysctls:
       net.ipv4.ping_group_range: 10001 10001
     healthcheck:
@@ -36,14 +31,10 @@ services:
       timeout: 3s
       retries: 15
       start_period: 10s
-    labels:
-      kb2ctf.lab: kb2ctf-web-lab
+    volumes:
+    - ./flag.txt:/run/lab/flag.txt:ro
+    - ./session-key.txt:/run/lab/session-key.txt:ro
 networks:
   blind_net:
     driver_opts:
       com.docker.network.bridge.enable_ip_masquerade: 'false'
-secrets:
-  blind_flag:
-    file: ../../.lab/secrets/blind-rce/flag.txt
-  blind_key:
-    file: ../../.lab/secrets/blind-rce/key.txt

@@ -3,10 +3,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 RUN groupadd --gid 10001 lab && useradd --uid 10001 --gid lab --no-create-home lab
 RUN apt-get update && apt-get install -y --no-install-recommends iputils-ping && setcap -r /usr/bin/ping && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-COPY tasks/blind-rce/requirements.txt /app/requirements.txt
+COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-COPY tasks/blind-rce/app/ /app/
-COPY common/ui/ /app/static/
+COPY app/ /app/
 RUN mkdir -p /var/lib/lab/state && chown lab:lab /var/lib/lab/state
 USER 10001:10001
 EXPOSE 8080

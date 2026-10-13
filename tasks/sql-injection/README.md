@@ -1,36 +1,26 @@
 # SQL Hunter
 
-Стек: Python / Flask / SQLAlchemy / PostgreSQL. Сложность: Basic.
-Prerequisites: Forms, cookies/session, основы SELECT/WHERE.
+Регистрация, вход и личные заметки. Исходные SQL query strings и SHA-256 сохранены.
 
-## Обычный сценарий
+## Запуск
 
-Зарегистрируйтесь и войдите в сервис личных заметок. Новый аккаунт не имеет заметок, как в оригинале. Учебный пользователь robert имеет исходные обычные заметки и provisioned private note.
-
-## Архитектура и учебная цель
-
-Username → SQL query string. Регистрация, вход и notes используют исходное построение запросов строками.
-Пароли — исходный SHA-256, без дополнительных ограничений длины. Одна учебная тема — SQL Injection.
-Общий новый UI не меняет основную учебную причину ошибки оригинала.
-Flags provisioned локально; формата KB2CTF{...}, исключены из source и образов.
-
-## Запуск и reset
-
-Из корня repository:
+Скопируйте всю эту папку в любое место и из неё выполните:
 
 ~~~sh
-python tools/lab.py init
-docker compose -f tasks/sql-injection/compose.yaml up -d --build --wait
-python tools/lab.py reset sql-injection
-docker compose -f tasks/sql-injection/compose.yaml down
+docker compose up --build
 ~~~
 
-Либо python tools/lab.py up sql-injection. Требуются Python 3.11+ и работающий Docker с Linux containers.
-Задача запускается собственным Compose project, не запускает соседние задания.
-Состояние сбрасывается только у неё; локальный flag сохраняется.
+Откройте http://127.0.0.1:8084. Нужны только Docker с Linux containers и Docker Compose v2.
+Первая сборка загружает зависимости. Все файлы и готовые учебные настройки находятся внутри этой папки;
+Python, Node.js, Go и отдельная установка БД на host не нужны. Порт 8084 должен быть свободен.
 
-## Готовность
+PostgreSQL запускается и инициализируется автоматически; его port не публикуется.
 
-Критерии готовности: normal flow, input errors и healthcheck; отдельный Docker-запуск и scoped reset.
-Текущий статус фактических проверок указан в ../../docs/VERIFICATION.md.
-Причина основной ошибки сопоставима с безопасным вариантом в FIX.md. HINTS.md содержит только концептуальные подсказки.
+Остановка: Ctrl+C, затем docker compose down. Named volumes сохраняются.
+Для чистого начального состояния этой задачи: docker compose down -v, затем повторный запуск.
+Это удаляет только данные данного Compose project. У задач без named volumes достаточно пересоздать контейнер.
+
+flag.txt содержит явно демонстрационный флаг; локальные password/key files содержат готовые учебные значения.
+Стенд предназначен для локального обучения. Публичные ports привязаны к 127.0.0.1.
+Концептуальные подсказки — HINTS.md; причина ошибки и безопасный вариант — FIX.md.
+Attribution и лицензии — NOTICE.md и файлы соответствующих зависимостей.

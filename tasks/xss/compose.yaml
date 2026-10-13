@@ -1,58 +1,78 @@
-name: kb2ctf-web-lab-xss
+name: kb2ctf-xss
 services:
   xss:
-    build: {context: ../.., dockerfile: tasks/xss/Dockerfile}
-    ports: ["127.0.0.1:8083:8080"]
-    networks: [xss_net]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - 127.0.0.1:8083:8080
+    networks:
+    - xss_net
     read_only: true
-    cap_drop: [ALL]
-    security_opt: [no-new-privileges:true]
+    cap_drop:
+    - ALL
+    security_opt:
+    - no-new-privileges:true
     pids_limit: 64
     mem_limit: 256m
     cpus: 1.0
-    tmpfs: ["/tmp:rw,noexec,nosuid,size=32m,uid=10001,gid=10001,mode=1770"]
-    volumes: [xss_data:/var/lib/lab/xss]
-    secrets:
-      - {source: xss_flag, target: /run/lab/flag.txt}
-      - {source: xss_bot_password, target: /run/lab/bot-password.txt}
-    labels: {kb2ctf.lab: kb2ctf-web-lab}
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=32m,uid=10001,gid=10001,mode=1770
+    volumes:
+    - xss_data:/var/lib/lab/xss
+    - ./flag.txt:/run/lab/flag.txt:ro
+    - ./bot-password.txt:/run/lab/bot-password.txt:ro
     healthcheck:
-      test: [CMD, node, -e, "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test:
+      - CMD
+      - node
+      - -e
+      - fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
       interval: 5s
       timeout: 3s
       retries: 15
       start_period: 10s
   xss-bot:
-    build: {context: ../.., dockerfile: tasks/xss/Bot.Dockerfile}
-    depends_on: {xss: {condition: service_healthy}}
-    networks: [xss_net]
+    build:
+      context: .
+      dockerfile: Bot.Dockerfile
+    depends_on:
+      xss:
+        condition: service_healthy
+    networks:
+    - xss_net
     environment:
       FORUM_ORIGIN: http://xss:8080
       XSS_HOOK_ORIGIN: ${XSS_HOOK_ORIGIN:-}
-    extra_hosts: ["host.docker.internal:host-gateway"]
+    extra_hosts:
+    - host.docker.internal:host-gateway
     init: true
     read_only: true
-    cap_drop: [ALL]
-    security_opt: [no-new-privileges:true, "seccomp=./bot/seccomp.json"]
+    cap_drop:
+    - ALL
+    security_opt:
+    - no-new-privileges:true
+    - seccomp=./bot/seccomp.json
     pids_limit: 256
     mem_limit: 768m
     cpus: 1.0
     shm_size: 128m
-    tmpfs: ["/tmp:rw,noexec,nosuid,size=256m,uid=10001,gid=10001,mode=1770"]
-    secrets:
-      - {source: xss_bot_password, target: /run/lab/bot-password.txt}
-    labels: {kb2ctf.lab: kb2ctf-web-lab}
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=256m,uid=10001,gid=10001,mode=1770
     healthcheck:
-      test: [CMD, node, /app/bot/health.js]
+      test:
+      - CMD
+      - node
+      - /app/bot/health.js
       interval: 5s
       timeout: 3s
       retries: 15
       start_period: 30s
+    volumes:
+    - ./bot-password.txt:/run/lab/bot-password.txt:ro
 networks:
   xss_net:
-    driver_opts: {com.docker.network.bridge.enable_ip_masquerade: "false"}
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: 'false'
 volumes:
-  xss_data:
-secrets:
-  xss_flag: {file: ../../.lab/secrets/xss/flag.txt}
-  xss_bot_password: {file: ../../.lab/secrets/xss/bot-password.txt}
+  xss_data: null

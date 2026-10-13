@@ -1,4 +1,4 @@
-name: kb2ctf-web-lab-sql-injection
+name: kb2ctf-sql-injection
 services:
   sql-injection:
     read_only: true
@@ -12,8 +12,8 @@ services:
     tmpfs:
     - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
     build:
-      context: ../..
-      dockerfile: tasks/sql-injection/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
     - 127.0.0.1:8084:8080
     networks:
@@ -22,9 +22,6 @@ services:
     depends_on:
       sql-db:
         condition: service_healthy
-    secrets:
-    - source: sql_app_password
-      target: /run/lab/db-app-password.txt
     healthcheck:
       test:
       - CMD
@@ -35,8 +32,8 @@ services:
       timeout: 3s
       retries: 15
       start_period: 10s
-    labels:
-      kb2ctf.lab: kb2ctf-web-lab
+    volumes:
+    - ./db-app-password.txt:/run/lab/db-app-password.txt:ro
   sql-db:
     read_only: true
     security_opt:
@@ -50,23 +47,19 @@ services:
     - /tmp:rw,noexec,nosuid,size=32m,uid=999,gid=999,mode=1770
     - /var/run/postgresql:rw,nosuid,size=16m,uid=999,gid=999,mode=3770
     build:
-      context: ../..
-      dockerfile: tasks/sql-injection/db/Dockerfile
+      context: .
+      dockerfile: db/Dockerfile
     networks:
     - sql_net
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: kb2ctf
       POSTGRES_PASSWORD_FILE: /run/lab/db-admin-password.txt
-    secrets:
-    - source: sql_admin_password
-      target: /run/lab/db-admin-password.txt
-    - source: sql_app_password
-      target: /run/lab/db-app-password.txt
-    - source: sql_flag
-      target: /run/lab/flag.txt
     volumes:
     - sql_data:/var/lib/postgresql/data
+    - ./db-admin-password.txt:/run/lab/db-admin-password.txt:ro
+    - ./db-app-password.txt:/run/lab/db-app-password.txt:ro
+    - ./flag.txt:/run/lab/flag.txt:ro
     healthcheck:
       test:
       - CMD
@@ -81,20 +74,11 @@ services:
       timeout: 3s
       retries: 20
       start_period: 15s
-    labels:
-      kb2ctf.lab: kb2ctf-web-lab
 networks:
   sql_front:
     driver_opts:
       com.docker.network.bridge.enable_ip_masquerade: 'false'
   sql_net:
     internal: true
-secrets:
-  sql_admin_password:
-    file: ../../.lab/secrets/sql-injection/admin-password.txt
-  sql_app_password:
-    file: ../../.lab/secrets/sql-injection/app-password.txt
-  sql_flag:
-    file: ../../.lab/secrets/sql-injection/flag.txt
 volumes:
   sql_data: {}

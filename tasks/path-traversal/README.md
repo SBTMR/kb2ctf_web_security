@@ -1,36 +1,24 @@
 # Burger Storage
 
-Стек: Python / Flask. Сложность: Basic.
-Prerequisites: Accounts/sessions, filesystem paths.
+Регистрация, вход и файловое хранилище с burger.jpg. Исходные upload/download forms и path handling сохранены.
 
-## Обычный сценарий
+## Запуск
 
-Зарегистрируйтесь и войдите. В хранилище уже есть исходный burger.jpg. Загрузите небольшой файл через /upload и скачайте через /download. Сохраняются отдельные upload/download forms и поле filename.
-
-## Архитектура и учебная цель
-
-Пользовательское filename → filesystem read. Основная ошибка — отсутствие canonical containment в download. Upload сохраняет исходную normpath/startswith проверку; download использует исходный inline send_file.
-Добавленные фильтры имён, размеры и квоты отсутствуют. Пароли хешируются исходным SHA-256.
-Общий новый UI не меняет основную учебную причину ошибки оригинала.
-Flags provisioned локально; формата KB2CTF{...}, исключены из source и образов.
-
-## Запуск и reset
-
-Из корня repository:
+Скопируйте всю эту папку в любое место и из неё выполните:
 
 ~~~sh
-python tools/lab.py init
-docker compose -f tasks/path-traversal/compose.yaml up -d --build --wait
-python tools/lab.py reset path-traversal
-docker compose -f tasks/path-traversal/compose.yaml down
+docker compose up --build
 ~~~
 
-Либо python tools/lab.py up path-traversal. Требуются Python 3.11+ и работающий Docker с Linux containers.
-Задача запускается собственным Compose project, не запускает соседние задания.
-Состояние сбрасывается только у неё; локальный flag сохраняется.
+Откройте http://127.0.0.1:8085. Нужны только Docker с Linux containers и Docker Compose v2.
+Первая сборка загружает зависимости. Все файлы и готовые учебные настройки находятся внутри этой папки;
+Python, Node.js, Go и отдельная установка БД на host не нужны. Порт 8085 должен быть свободен.
 
-## Готовность
+Остановка: Ctrl+C, затем docker compose down. Named volumes сохраняются.
+Для чистого начального состояния этой задачи: docker compose down -v, затем повторный запуск.
+Это удаляет только данные данного Compose project. У задач без named volumes достаточно пересоздать контейнер.
 
-Критерии готовности: normal flow, input errors и healthcheck; отдельный Docker-запуск и scoped reset.
-Текущий статус фактических проверок указан в ../../docs/VERIFICATION.md.
-Причина основной ошибки сопоставима с безопасным вариантом в FIX.md. HINTS.md содержит только концептуальные подсказки.
+flag.txt содержит явно демонстрационный флаг; локальные password/key files содержат готовые учебные значения.
+Стенд предназначен для локального обучения. Публичные ports привязаны к 127.0.0.1.
+Концептуальные подсказки — HINTS.md; причина ошибки и безопасный вариант — FIX.md.
+Attribution и лицензии — NOTICE.md и файлы соответствующих зависимостей.

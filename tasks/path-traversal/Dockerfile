@@ -2,10 +2,9 @@ FROM python:3.13-slim-bookworm@sha256:a1165e272e578941b84abc79e4ab38a0305cd12803
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 RUN groupadd --gid 10001 lab && useradd --uid 10001 --gid lab --no-create-home lab
 WORKDIR /app
-COPY tasks/path-traversal/requirements.txt /app/requirements.txt
+COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-COPY tasks/path-traversal/app/ /app/
-COPY common/ui/ /app/static/
+COPY app/ /app/
 RUN mkdir -p /var/lib/lab/storage && chown 10001:10001 /var/lib/lab/storage
 USER 10001:10001
 EXPOSE 8080

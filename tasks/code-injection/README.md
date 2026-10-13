@@ -1,37 +1,24 @@
 # Inspector Gadget
 
-Стек: Python / Flask. Сложность: Optional/Advanced.
-Prerequisites: Python expressions, arithmetic, interpreter/eval.
+Optional-калькулятор с прямым Python eval и арифметическими кнопками. Безопасный evaluator описан в FIX.md.
 
-## Обычный сценарий
+## Запуск
 
-Optional calculator: соберите арифметическое выражение кнопками или вводом и нажмите =. API /api/calculate принимает sign; normal result возвращается в message. Ошибки возвращают исходный message=bebebe; отсутствующее поле — Nothing to calculate.
-
-## Архитектура и учебная цель
-
-Недоверенное expression → прямой eval в Flask handler, как в оригинале.
-Отдельный worker, timeout, expression/result limits и фильтры типов результата отсутствуют.
-Это демонстрация исходной ошибки, а не sandbox-bypass задача; безопасный evaluator приведён только в FIX.
-Общий новый UI не меняет основную учебную причину ошибки оригинала.
-Flags provisioned локально; формата KB2CTF{...}, исключены из source и образов.
-
-## Запуск и reset
-
-Из корня repository:
+Скопируйте всю эту папку в любое место и из неё выполните:
 
 ~~~sh
-python tools/lab.py init
-docker compose -f tasks/code-injection/compose.yaml up -d --build --wait
-python tools/lab.py reset code-injection
-docker compose -f tasks/code-injection/compose.yaml down
+docker compose up --build
 ~~~
 
-Либо python tools/lab.py up code-injection. Требуются Python 3.11+ и работающий Docker с Linux containers.
-Задача запускается собственным Compose project, не запускает соседние задания.
-Состояние сбрасывается только у неё; локальный flag сохраняется.
+Откройте http://127.0.0.1:8088. Нужны только Docker с Linux containers и Docker Compose v2.
+Первая сборка загружает зависимости. Все файлы и готовые учебные настройки находятся внутри этой папки;
+Python, Node.js, Go и отдельная установка БД на host не нужны. Порт 8088 должен быть свободен.
 
-## Готовность
+Остановка: Ctrl+C, затем docker compose down. Named volumes сохраняются.
+Для чистого начального состояния этой задачи: docker compose down -v, затем повторный запуск.
+Это удаляет только данные данного Compose project. У задач без named volumes достаточно пересоздать контейнер.
 
-Критерии готовности: normal flow, input errors и healthcheck; отдельный Docker-запуск и scoped reset.
-Текущий статус фактических проверок указан в ../../docs/VERIFICATION.md.
-Причина основной ошибки сопоставима с безопасным вариантом в FIX.md. HINTS.md содержит только концептуальные подсказки.
+flag.txt содержит явно демонстрационный флаг; локальные password/key files содержат готовые учебные значения.
+Стенд предназначен для локального обучения. Публичные ports привязаны к 127.0.0.1.
+Концептуальные подсказки — HINTS.md; причина ошибки и безопасный вариант — FIX.md.
+Attribution и лицензии — NOTICE.md и файлы соответствующих зависимостей.

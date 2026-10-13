@@ -1,6 +1,5 @@
 import express from 'express';
 import {readFile} from 'node:fs/promises';
-import {existsSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {dirname, join, resolve} from 'node:path';
 import {randomUUID} from 'node:crypto';
@@ -36,8 +35,6 @@ export async function createForum({directory, botPassword, flag, clock = Date.no
   app.set('view engine', 'ejs');
   app.set('views', join(APP_DIR, 'views'));
   app.use(express.urlencoded({extended: false, limit: '16kb', parameterLimit: 12}));
-  const developmentUI = resolve(APP_DIR, '../../../common/ui');
-  app.use('/assets', express.static(existsSync(developmentUI) ? developmentUI : resolve(APP_DIR, '../ui')));
   app.use('/assets', express.static(join(APP_DIR, 'assets')));
   app.use((req, res, next) => {
     res.set('X-Content-Type-Options', 'nosniff');

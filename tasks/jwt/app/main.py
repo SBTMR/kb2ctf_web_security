@@ -15,8 +15,7 @@ COOKIE = 'flag_token'
 from flask import jsonify
 
 ROOT = Path(__file__).resolve().parent
-DEV_ASSETS = ROOT.parents[2] / 'common' / 'ui' if len(ROOT.parents) > 2 else ROOT / 'static'
-app = Flask(__name__, static_folder=str(DEV_ASSETS if DEV_ASSETS.exists() else ROOT / 'static'))
+app = Flask(__name__)
 
 users = {"admin": "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(25))}
 

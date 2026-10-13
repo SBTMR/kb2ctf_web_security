@@ -7,7 +7,6 @@ LAB_MARKER_FILE сообщает диагностическому процесс
 Observer не принимает путь от клиента, не предоставляет write endpoint, не раскрывает output или exit code.
 Новая попытка не учитывает старое состояние. Observer просто проверяет наличие файла текущей попытки.
 Добавленные input filters, timeout и process-group wrapper убраны.
-Fixture в unit test устанавливает состояние напрямую и проверяет observer; это не execution scenario.
 
 Безопасный вариант:
 ~~~python

@@ -1,4 +1,4 @@
-name: kb2ctf-web-lab-command-injection
+name: kb2ctf-command-injection
 services:
   command-injection:
     read_only: true
@@ -12,15 +12,12 @@ services:
     tmpfs:
     - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
     build:
-      context: ../..
-      dockerfile: tasks/command-injection/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
     - 127.0.0.1:8086:8080
     networks:
     - pinger_net
-    secrets:
-    - source: pinger_flag
-      target: /run/lab/flag.txt
     sysctls:
       net.ipv4.ping_group_range: 10001 10001
     healthcheck:
@@ -33,12 +30,9 @@ services:
       timeout: 3s
       retries: 15
       start_period: 10s
-    labels:
-      kb2ctf.lab: kb2ctf-web-lab
+    volumes:
+    - ./flag.txt:/run/lab/flag.txt:ro
 networks:
   pinger_net:
     driver_opts:
       com.docker.network.bridge.enable_ip_masquerade: 'false'
-secrets:
-  pinger_flag:
-    file: ../../.lab/secrets/command-injection/flag.txt
