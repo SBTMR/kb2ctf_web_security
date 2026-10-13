@@ -43,7 +43,6 @@ services:
     - xss_net
     environment:
       FORUM_ORIGIN: http://xss:8080
-      XSS_HOOK_ORIGIN: ${XSS_HOOK_ORIGIN:-}
     extra_hosts:
     - host.docker.internal:host-gateway
     init: true
@@ -72,7 +71,6 @@ services:
     - ./bot-password.txt:/run/lab/bot-password.txt:ro
 networks:
   xss_net:
-    driver_opts:
-      com.docker.network.bridge.enable_ip_masquerade: 'false'
+    driver: bridge
 volumes:
   xss_data: null
