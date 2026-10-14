@@ -47,6 +47,8 @@ services:
     security_opt:
     - no-new-privileges:true
     - seccomp=./bot/seccomp.json
+    # Kali's docker-default AppArmor profile may deny Chromium userns_create.
+    - apparmor=unconfined
     pids_limit: 256
     mem_limit: 768m
     cpus: 1.0

@@ -26,6 +26,10 @@ XSS_HOOK_ORIGIN не нужны; форум использует bridge, бот 
 Если BeEF работает на другом порту, укажите этот порт в URL хука.
 Подключение hook не добавляется автоматически. Обновление страницы каждые 7 секунд
 может прерывать и восстанавливать его соединение. Chromium sandbox включён.
+У xss-bot задано `apparmor=unconfined`: профиль `docker-default` на Kali может
+запрещать `userns_create`, необходимый sandbox Chromium. Это снимает слой AppArmor
+только с контейнера бота; системные настройки AppArmor не меняются. Seccomp,
+непривилегированный пользователь, read-only filesystem и Chromium sandbox сохранены.
 Пароль бота — готовое учебное значение в bot-password.txt. Бот не получает файл флага.
 Учебные flag.txt и bot-password.txt копируются в соответствующие образы при сборке;
 права задаются внутри образа, поэтому bind mounts из общей папки VirtualBox не нужны.
@@ -54,6 +58,26 @@ BeEF. BeEF должен рекламировать браузеру доступ
 на другом компьютере 127.0.0.1 указывает на тот другой компьютер.
 Автоматического подключения без XSS-поста нет. Обновление ленты раз в 7 секунд
 перезагружает хук, поэтому соединение в BeEF может переподключаться.
+
+После обновления пересоздайте контейнеры и проверьте состояние:
+
+~~~sh
+docker compose up -d --build --force-recreate
+docker compose ps -a
+docker compose logs --tail=30 xss-bot
+~~~
+
+Оба сервиса должны получить статус healthy. Для проверки циклов бота выполните
+команду дважды с интервалом 10 секунд: поле visits должно увеличиваться.
+
+~~~sh
+docker compose exec xss-bot node -e 'console.log(require("node:fs").readFileSync("/tmp/bot-state.json", "utf8"))'
+~~~
+
+Если Chromium всё ещё падает с Permission denied, проверьте журнал ядра Kali:
+`sudo journalctl -k --since "10 minutes ago" --no-pager`.
+Новый отказ с profile="unconfined" требует отдельной настройки политики user namespaces
+на хосте; отключать sandbox Chromium для этого не требуется.
 
 Остановка: Ctrl+C, затем docker compose down. Named volumes сохраняются.
 Для чистого начального состояния этой задачи: docker compose down -v, затем повторный запуск.
