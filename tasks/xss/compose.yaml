@@ -20,8 +20,6 @@ services:
     - /tmp:rw,noexec,nosuid,size=32m,uid=10001,gid=10001,mode=1770
     volumes:
     - xss_data:/var/lib/lab/xss
-    - ./flag.txt:/run/lab/flag.txt:ro
-    - ./bot-password.txt:/run/lab/bot-password.txt:ro
     healthcheck:
       test:
       - CMD
@@ -39,12 +37,9 @@ services:
     depends_on:
       xss:
         condition: service_healthy
-    networks:
-    - xss_net
+    network_mode: host
     environment:
-      FORUM_ORIGIN: http://xss:8080
-    extra_hosts:
-    - host.docker.internal:host-gateway
+      FORUM_ORIGIN: http://127.0.0.1:8083
     init: true
     read_only: true
     cap_drop:
@@ -67,8 +62,6 @@ services:
       timeout: 3s
       retries: 15
       start_period: 30s
-    volumes:
-    - ./bot-password.txt:/run/lab/bot-password.txt:ro
 networks:
   xss_net:
     driver: bridge

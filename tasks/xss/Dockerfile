@@ -5,7 +5,8 @@ WORKDIR /app/app
 COPY app/package*.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY app/ ./
-RUN mkdir -p /var/lib/lab/xss && chown 10001:10001 /var/lib/lab/xss
+COPY flag.txt bot-password.txt /run/lab/
+RUN chmod -R a+rX /app/app && chmod 755 /run/lab && chmod 444 /run/lab/*.txt && mkdir -p /var/lib/lab/xss && chown 10001:10001 /var/lib/lab/xss
 USER 10001:10001
 EXPOSE 8080
 CMD ["node", "server.js"]
