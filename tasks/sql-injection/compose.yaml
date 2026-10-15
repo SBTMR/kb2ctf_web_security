@@ -32,8 +32,6 @@ services:
       timeout: 3s
       retries: 15
       start_period: 10s
-    volumes:
-    - ./db-app-password.txt:/run/lab/db-app-password.txt:ro
   sql-db:
     read_only: true
     security_opt:
@@ -54,12 +52,8 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: kb2ctf
-      POSTGRES_PASSWORD_FILE: /run/lab/db-admin-password.txt
     volumes:
     - sql_data:/var/lib/postgresql/data
-    - ./db-admin-password.txt:/run/lab/db-admin-password.txt:ro
-    - ./db-app-password.txt:/run/lab/db-app-password.txt:ro
-    - ./flag.txt:/run/lab/flag.txt:ro
     healthcheck:
       test:
       - CMD

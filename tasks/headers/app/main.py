@@ -38,12 +38,8 @@ def give_me_my_flag():
     return jsonify({"here is your flag, little CTFer": read_flag()})
 
 def read_flag():
-    return Path(os.environ.get('FLAG_FILE', '/run/lab/flag.txt')).read_text(encoding='utf-8').strip()
+    return 'KB2CTF{headers_demo}'
 
 @app.get('/healthz')
 def health():
-    try:
-        read_flag()
-        return jsonify(status='ready')
-    except OSError:
-        return jsonify(status='unavailable'), 503
+    return jsonify(status='ready')

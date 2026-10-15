@@ -1,1 +1,0 @@
-KB2CTF{ssrf_demo}

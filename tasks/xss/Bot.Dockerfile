@@ -5,7 +5,6 @@ WORKDIR /app/bot
 COPY bot/package*.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY bot/ ./
-COPY bot-password.txt /run/lab/
-RUN chmod -R a+rX /app/bot && chmod 755 /run/lab && chmod 444 /run/lab/bot-password.txt
+RUN chmod -R a+rX /app/bot
 USER 10001:10001
 CMD ["node", "main.js"]

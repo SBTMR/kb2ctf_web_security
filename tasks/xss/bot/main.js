@@ -1,11 +1,11 @@
 import {chromium} from 'playwright';
-import {readFile, writeFile, rename} from 'node:fs/promises';
+import {writeFile, rename} from 'node:fs/promises';
 import {setTimeout as pause} from 'node:timers/promises';
 import {origin, runner} from './policy.js';
 import {ensureSession} from './auth.js';
 
 const APP = origin(process.env.FORUM_ORIGIN || 'http://xss:8080');
-const PASSWORD = (await readFile(process.env.BOT_PASSWORD_FILE || '/run/lab/bot-password.txt', 'utf8')).trim();
+const PASSWORD = 'kb2ctf_meme_reader_demo_password_2026';
 if (PASSWORD.length < 32) throw new Error('Invalid bot configuration');
 const HEARTBEAT = process.env.BOT_HEARTBEAT_FILE || '/tmp/bot-state.json';
 let browser;

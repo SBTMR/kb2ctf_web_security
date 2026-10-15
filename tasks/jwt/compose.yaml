@@ -28,8 +28,6 @@ services:
       timeout: 3s
       retries: 15
       start_period: 10s
-    volumes:
-    - ./flag.txt:/run/lab/flag.txt:ro
 networks:
   jwt_net:
     driver_opts:

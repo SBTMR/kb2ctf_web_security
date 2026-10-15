@@ -20,7 +20,6 @@ services:
     - storage_net
     volumes:
     - storage_data:/var/lib/lab/storage
-    - ./flag.txt:/run/lab/flag.txt:ro
     healthcheck:
       test:
       - CMD

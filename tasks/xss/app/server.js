@@ -1,5 +1,4 @@
 import express from 'express';
-import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {dirname, join, resolve} from 'node:path';
 import {randomUUID} from 'node:crypto';
@@ -139,8 +138,8 @@ export async function createForum({directory, botPassword, flag, clock = Date.no
 if (resolve(process.argv[1] || '') === fileURLToPath(import.meta.url)) {
   try {
     const {app} = await createForum({directory: process.env.STATE_DIR || '/var/lib/lab/xss',
-      botPassword: (await readFile(process.env.BOT_PASSWORD_FILE || '/run/lab/bot-password.txt', 'utf8')).trim(),
-      flag: (await readFile(process.env.FLAG_FILE || '/run/lab/flag.txt', 'utf8')).trim()});
+      botPassword: 'kb2ctf_meme_reader_demo_password_2026',
+      flag: 'KB2CTF{xss_demo}'});
     const server = app.listen(8080, '0.0.0.0', () => console.log('Meme Forum ready'));
     server.requestTimeout = 10000;
     server.headersTimeout = 5000;

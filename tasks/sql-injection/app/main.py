@@ -17,7 +17,7 @@ app.config['SESSION_COOKIE_NAME'] = 'kb2ctf_sql'
 app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(25))
 
 db_user = 'lab_app'
-db_password = Path(os.environ.get('DB_PASSWORD_FILE', '/run/lab/db-app-password.txt')).read_text(encoding='utf-8').strip()
+db_password = 'kb2ctf_sql_app_demo_password'
 db_host = os.environ.get('POSTGRES_HOST', 'sql-db')
 db_name = 'kb2ctf'
 
