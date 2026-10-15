@@ -82,20 +82,31 @@ export class Store {
   static async open(directory, botPassword, clock = Date.now) {
     await mkdir(directory, {recursive: true, mode: 0o700});
     let state;
+    let refreshBotPassword = false;
     try {
       state = JSON.parse(await readFile(join(directory, 'state.json'), 'utf8'));
       if (state.version !== 1 || !Array.isArray(state.users) || !Array.isArray(state.posts) || !Array.isArray(state.sessions)) {
         throw new Error('Invalid forum state');
       }
       const bot = state.users.find(user => user.username === BOT_NAME && user.bot === true);
-      if (!bot || !await checkPassword(botPassword, bot.passwordHash)) throw new Error('Invalid bot configuration');
+      if (!bot) throw new Error('Bot account missing from forum state');
+      refreshBotPassword = !await checkPassword(botPassword, bot.passwordHash);
     } catch (error) {
       if (error.code !== 'ENOENT') throw error;
       const bot = {id: randomUUID(), username: BOT_NAME, passwordHash: await hashPassword(botPassword), bot: true};
       state = {version: 1, users: [bot], sessions: [], posts: createDemoPosts(bot.id, clock)};
       await writeFile(join(directory, 'state.json'), JSON.stringify(state), {mode: 0o600});
     }
-    return new Store(directory, state, clock);
+    const store = new Store(directory, state, clock);
+    if (refreshBotPassword) {
+      const passwordHash = await hashPassword(botPassword);
+      await store.mutate(next => {
+        const bot = next.users.find(user => user.username === BOT_NAME && user.bot === true);
+        bot.passwordHash = passwordHash;
+        next.sessions = next.sessions.filter(session => session.userId !== bot.id);
+      });
+    }
+    return store;
   }
 
   mutate(operation) {

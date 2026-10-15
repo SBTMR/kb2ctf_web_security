@@ -147,8 +147,18 @@ if (resolve(process.argv[1] || '') === fileURLToPath(import.meta.url)) {
     const stop = () => server.close(() => process.exit(0));
     process.on('SIGTERM', stop);
     process.on('SIGINT', stop);
-  } catch {
-    console.error('Forum startup failed: check local secrets and state.');
+  } catch (error) {
+    const reasons = {
+      EACCES: 'State directory is not writable by uid 10001.',
+      EPERM: 'State directory access denied.',
+      EROFS: 'State directory is read-only; check the xss_data volume.',
+      ENOSPC: 'No space left for forum state.',
+    };
+    const detail = reasons[error.code] || (error instanceof SyntaxError
+      ? 'state.json contains invalid JSON.'
+      : ['Invalid forum state', 'Bot account missing from forum state', 'Invalid local configuration'].includes(error.message)
+        ? error.message : 'Unexpected initialization error; check the state volume.');
+    console.error('Forum startup failed: ' + detail);
     process.exit(1);
   }
 }
