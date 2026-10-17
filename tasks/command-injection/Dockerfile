@@ -6,6 +6,7 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ /app/
+RUN python /app/seed.py && chmod 444 /flag.txt
 USER 10001:10001
 EXPOSE 8080
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "4", "--timeout", "15", "--access-logfile", "/dev/null", "main:app"]
