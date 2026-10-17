@@ -3,6 +3,6 @@ services:
   blind-rce:
     build: .
     ports:
-      - 127.0.0.1:8087:51338
+      - 0.0.0.0:8087:51338
     environment:
       - FLAG=KB2CTF{blind_rce_demo}
