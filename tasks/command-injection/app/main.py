@@ -29,8 +29,12 @@ def pinger():
     return create_resp(data.stdout)
 
 def read_flag():
-    return 'KB2CTF{command_injection_demo}'
+    return Path('/flag.txt').read_text(encoding='utf-8').strip()
 
 @app.get('/healthz')
 def health():
-    return jsonify(status='ready')
+    try:
+        read_flag()
+        return jsonify(status='ready')
+    except OSError:
+        return jsonify(status='unavailable'), 503

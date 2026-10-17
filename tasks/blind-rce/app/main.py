@@ -10,11 +10,15 @@ ROOT = Path(__file__).resolve().parent
 app = Flask(__name__)
 
 def read_flag():
-    return 'KB2CTF{blind_rce_demo}'
+    return Path('/flag.txt').read_text(encoding='utf-8').strip()
 
 @app.get('/healthz')
 def health():
-    return jsonify(status='ready')
+    try:
+        read_flag()
+        return jsonify(status='ready')
+    except OSError:
+        return jsonify(status='unavailable'), 503
 
 app.secret_key = 'kb2ctf_blind_demo_session_key_2026_only_for_local_training'
 app.config['SESSION_COOKIE_NAME'] = 'kb2ctf_blind'

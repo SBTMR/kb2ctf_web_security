@@ -5,6 +5,7 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ /app/
+RUN python /app/seed.py && chmod 444 /flag.txt
 RUN mkdir -p /var/lib/lab/storage && chown 10001:10001 /var/lib/lab/storage
 USER 10001:10001
 EXPOSE 8080
