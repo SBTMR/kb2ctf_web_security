@@ -1,14 +1,18 @@
 # FIX — Blind Command Injection
-Root cause совпадает с Pinger: command string передаётся shell. stdout/stderr направлены в DEVNULL,
-но способ обработки input не изменился. Наличие marker демонстрирует только локальное предусмотренное состояние.
 
-Backend создаёт случайный идентификатор попытки и отдельную область состояния.
-LAB_MARKER_FILE сообщает диагностическому процессу предусмотренное место marker.
-Observer не принимает путь от клиента, не предоставляет write endpoint, не раскрывает output или exit code.
-Новая попытка не учитывает старое состояние. Observer просто проверяет наличие файла текущей попытки.
-Добавленные input filters, timeout и process-group wrapper убраны.
+Root cause совпадает с Pinger: пользовательский `ip` подставляется в строку
+`ping %s -c 1`, которая передаётся в `subprocess.run(..., shell=True)`.
+Shell интерпретирует метасимволы ввода как часть команды.
+
+Как в оригинальном Pinger Deluxe Edition, `capture_output=True` захватывает оба потока,
+но клиент получает только фиксированное сообщение: `bebebe error` при непустом stderr
+или `bebebe pinged` в остальных случаях. Код возврата процесса не проверяется;
+ненулевой exit code без stderr также приводит к `bebebe pinged`.
+Сокрытие вывода не устраняет выполнение команд. `FLAG` передаётся через окружение,
+поэтому доступна дочернему процессу. Дополнительных observer и marker нет.
 
 Безопасный вариант:
+
 ~~~python
 import ipaddress
 import subprocess
@@ -16,12 +20,10 @@ import subprocess
 def safe_diagnostic(host):
     address = str(ipaddress.ip_address(host))
     subprocess.run(
-        ["/usr/bin/ping", "-c", "1", "-W", "1", address],
+        ["/bin/ping", "-c", "1", "-W", "1", address],
         shell=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         timeout=3, check=False
     )
 ~~~
 
 Сначала исправляется способ выполнения; политика отображения результата остаётся отдельным решением.
-Marker и attempts хранятся в ограниченном tmpfs и очищаются при reset.
-Нет interactive shell, callbacks или дополнительных сетевых компонентов.

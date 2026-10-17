@@ -1,37 +1,8 @@
 name: kb2ctf-blind-rce
 services:
   blind-rce:
-    read_only: true
-    security_opt:
-    - no-new-privileges:true
-    cap_drop:
-    - ALL
-    pids_limit: 64
-    mem_limit: 256m
-    cpus: 1.0
-    tmpfs:
-    - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
-    - /var/lib/lab/state:rw,noexec,nosuid,size=32m,uid=10001,gid=10001,mode=0700
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     ports:
-    - 127.0.0.1:8087:8080
-    networks:
-    - blind_net
-    sysctls:
-      net.ipv4.ping_group_range: 10001 10001
-    healthcheck:
-      test:
-      - CMD
-      - python
-      - -c
-      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz',timeout=2).read()
-      interval: 5s
-      timeout: 3s
-      retries: 15
-      start_period: 10s
-networks:
-  blind_net:
-    driver_opts:
-      com.docker.network.bridge.enable_ip_masquerade: 'false'
+      - 127.0.0.1:8087:51338
+    environment:
+      - FLAG=KB2CTF{blind_rce_demo}
