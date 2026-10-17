@@ -3,9 +3,6 @@ from subprocess import run
 import json
 import os
 
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parent
 app = Flask(__name__)
 
 
@@ -28,13 +25,8 @@ def pinger():
 
     return create_resp(data.stdout)
 
-def read_flag():
-    return Path('/flag.txt').read_text(encoding='utf-8').strip()
-
 @app.get('/healthz')
 def health():
-    try:
-        read_flag()
+    if os.environ.get('FLAG'):
         return jsonify(status='ready')
-    except OSError:
-        return jsonify(status='unavailable'), 503
+    return jsonify(status='unavailable'), 503

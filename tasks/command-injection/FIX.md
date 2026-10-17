@@ -1,6 +1,7 @@
 # FIX — Command Injection
 Root cause: backend собирает command string с пользовательским host и запускает shell.
 Non-root и container resource limits не исправляют способ обработки input.
+Флаг передаётся через переменную окружения `FLAG`, как в оригинале; запущенный shell наследует её.
 Учебный обработчик использует исходный run без добавленного прикладного timeout.
 
 Уязвимый участок:

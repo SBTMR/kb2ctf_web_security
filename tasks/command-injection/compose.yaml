@@ -16,6 +16,8 @@ services:
       dockerfile: Dockerfile
     ports:
     - 127.0.0.1:8086:8080
+    environment:
+      FLAG: 'KB2CTF{command_injection_demo}'
     networks:
     - pinger_net
     sysctls:
