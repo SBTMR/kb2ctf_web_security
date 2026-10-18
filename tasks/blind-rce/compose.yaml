@@ -2,5 +2,7 @@ name: kb2ctf-blind-rce
 services:
   blind-rce:
     build: .
+    environment:
+      - FLAG=KB2CTF{blind_rce_demo}
     ports:
       - 0.0.0.0:8087:51338
