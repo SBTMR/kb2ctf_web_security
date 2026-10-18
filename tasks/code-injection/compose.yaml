@@ -1,0 +1,34 @@
+name: kb2ctf-code-injection
+services:
+  code-injection:
+    read_only: true
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 1.0
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - 127.0.0.1:8088:8080
+    networks:
+    - calculator_net
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz',timeout=2).read()
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
+networks:
+  calculator_net:
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: 'false'

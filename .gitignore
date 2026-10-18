@@ -1,0 +1,4 @@
+.releases/
+local-backups/
+**/__pycache__/
+/deploy/

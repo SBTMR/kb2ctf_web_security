@@ -1,0 +1,78 @@
+name: kb2ctf-sql-injection
+services:
+  sql-injection:
+    read_only: true
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 1.0
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=64m,uid=10001,gid=10001,mode=1770
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - 127.0.0.1:8084:8080
+    networks:
+    - sql_front
+    - sql_net
+    depends_on:
+      sql-db:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz',timeout=2).read()
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
+  sql-db:
+    read_only: true
+    security_opt:
+    - no-new-privileges:true
+    cap_drop:
+    - ALL
+    pids_limit: 64
+    mem_limit: 384m
+    cpus: 1.0
+    tmpfs:
+    - /tmp:rw,noexec,nosuid,size=32m,uid=999,gid=999,mode=1770
+    - /var/run/postgresql:rw,nosuid,size=16m,uid=999,gid=999,mode=3770
+    build:
+      context: .
+      dockerfile: db/Dockerfile
+    networks:
+    - sql_net
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: kb2ctf
+    volumes:
+    - sql_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -h
+      - 127.0.0.1
+      - -U
+      - postgres
+      - -d
+      - kb2ctf
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
+networks:
+  sql_front:
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: 'false'
+  sql_net:
+    internal: true
+volumes:
+  sql_data: {}
